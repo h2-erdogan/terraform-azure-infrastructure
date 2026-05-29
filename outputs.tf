@@ -5,3 +5,10 @@ output "resource_group_name" {
 output "storage_account_name" {
   value = azurerm_storage_account.storage.name
 }
+output "virtual_network_name" {
+  value = azurerm_virtual_network.main.name
+}
+
+output "subnet_name" {
+  value = azurerm_subnet.main.name
+}
