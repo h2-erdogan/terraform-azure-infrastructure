@@ -159,9 +159,7 @@ Pipeline stages:
 
 ![Terraform Plan](screenshots/terraform-plan.png)
 
-### GitHub Actions Success
 
-![GitHub Actions](screenshots/github-actions-success.png)
 
 ---
 
