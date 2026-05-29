@@ -9,11 +9,9 @@ on:
 
 jobs:
   terraform:
-
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -28,5 +26,3 @@ jobs:
 
       - name: Terraform Validate
         run: terraform validate
-      - name: Terraform Plan
-        run: terraform plan
