@@ -1,30 +1,57 @@
 # Terraform Azure Infrastructure
 
-Infrastructure as Code (IaC) project built with Terraform and Microsoft Azure.
+![Terraform](https://img.shields.io/badge/Terraform-v1.x-623CE4?logo=terraform\&logoColor=white)
+![Azure](https://img.shields.io/badge/Microsoft-Azure-0078D4?logo=microsoftazure\&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=githubactions\&logoColor=white)
 
-This project demonstrates how cloud infrastructure can be defined, validated, and managed using Terraform. The infrastructure includes Azure networking resources, storage services, and an automated GitHub Actions validation pipeline.
-
----
-
-## Features
-
-- Infrastructure as Code with Terraform
-- Azure Resource Group configuration
-- Azure Virtual Network (VNet)
-- Azure Subnet configuration
-- Azure Storage Account
-- GitHub Actions CI pipeline
-- Terraform validation and formatting checks
-- AzureRM provider integration
+Infrastructure as Code (IaC) project built to demonstrate Azure infrastructure provisioning using Terraform following production-oriented design practices.
 
 ---
 
-## Tech Stack
+## Overview
 
-- Terraform
-- Microsoft Azure
-- AzureRM Provider
-- GitHub Actions
+This repository demonstrates how Azure infrastructure can be provisioned, organized, and maintained using Terraform while following Infrastructure as Code best practices.
+
+The project focuses on:
+
+* Modular Terraform architecture
+* Azure networking
+* Azure Storage
+* Network Security Groups
+* Infrastructure validation with GitHub Actions
+* Resource tagging
+* Consistent naming conventions
+
+---
+
+## Architecture
+
+```text
+                    Terraform
+                         │
+        ┌────────────────┼────────────────┐
+        │                │                │
+        ▼                ▼                ▼
+ Resource Group      Virtual Network   Storage Account
+                            │
+                            ▼
+                         Subnet
+                            │
+                            ▼
+                 Network Security Group
+```
+
+---
+
+## Infrastructure Components
+
+| Resource               | Description                              |
+| ---------------------- | ---------------------------------------- |
+| Resource Group         | Logical container for Azure resources    |
+| Virtual Network        | Azure Virtual Network for infrastructure |
+| Subnet                 | Application subnet                       |
+| Network Security Group | Controls inbound traffic                 |
+| Storage Account        | Azure StorageV2 account                  |
 
 ---
 
@@ -33,55 +60,106 @@ This project demonstrates how cloud infrastructure can be defined, validated, an
 ```text
 terraform-azure-infrastructure/
 │
-├── .github/
-│   └── workflows/
-│       └── terraform-ci.yml
+├── modules/
+│   ├── resource-group/
+│   ├── network/
+│   ├── network-security-group/
+│   └── storage/
 │
-├── main.tf
 ├── provider.tf
 ├── variables.tf
 ├── outputs.tf
-├── .terraform.lock.hcl
-└── README.md
+├── main.tf
+├── backend.tf.example
+├── README.md
+│
+└── .github/
+    └── workflows/
+        └── terraform-ci.yml
 ```
 
 ---
 
-## Infrastructure Architecture
+## Module Design
+
+The infrastructure has been separated into reusable Terraform modules.
+
+| Module                 | Responsibility                                 |
+| ---------------------- | ---------------------------------------------- |
+| resource-group         | Creates Azure Resource Groups                  |
+| network                | Creates Virtual Networks and Subnets           |
+| network-security-group | Creates and associates Network Security Groups |
+| storage                | Creates Azure Storage Accounts                 |
+
+This design improves:
+
+* Reusability
+* Maintainability
+* Scalability
+* Separation of concerns
+
+---
+
+## Security
+
+The project provisions an Azure Network Security Group (NSG) with predefined inbound rules.
+
+| Rule        | Port | Protocol |
+| ----------- | ---- | -------- |
+| Allow HTTP  | 80   | TCP      |
+| Allow HTTPS | 443  | TCP      |
+
+The Network Security Group is associated with the application subnet.
+
+---
+
+## Naming Convention
+
+Resource names are generated using Terraform locals.
+
+Example:
 
 ```text
-Resource Group
-│
-├── Virtual Network
-│
-├── Subnet
-│
-└── Storage Account
+terraform-demo-dev-vnet
+terraform-demo-dev-app-subnet
+terraform-demo-dev-nsg
 ```
 
 ---
 
-## Resources Defined
+## Resource Tagging
 
-### Azure Resource Group
+Common tags are automatically applied to supported Azure resources.
 
-Creates a dedicated resource group for organizing cloud resources.
-
-### Azure Virtual Network
-
-Creates a virtual network for cloud networking.
-
-### Azure Subnet
-
-Creates a subnet within the virtual network.
-
-### Azure Storage Account
-
-Creates a storage account for Azure storage services.
+```text
+Environment = dev
+Project     = terraform-demo
+Owner       = Hasibe
+ManagedBy   = Terraform
+```
 
 ---
 
-## Terraform Commands
+## Remote Backend
+
+A sample Azure Remote Backend configuration is provided in:
+
+```text
+backend.tf.example
+```
+
+The project currently uses a local Terraform state during development. The backend example can be used when an Azure Storage backend is available.
+
+---
+
+## Getting Started
+
+### Clone the repository
+
+```bash
+git clone https://github.com/h2-erdogan/terraform-azure-infrastructure.git
+cd terraform-azure-infrastructure
+```
 
 ### Initialize Terraform
 
@@ -89,25 +167,19 @@ Creates a storage account for Azure storage services.
 terraform init
 ```
 
-### Validate Configuration
+### Validate the configuration
 
 ```bash
 terraform validate
 ```
 
-### Format Terraform Files
-
-```bash
-terraform fmt
-```
-
-### Generate Execution Plan
+### Generate an execution plan
 
 ```bash
 terraform plan
 ```
 
-### Deploy Infrastructure
+### Apply the infrastructure
 
 ```bash
 terraform apply
@@ -115,37 +187,13 @@ terraform apply
 
 ---
 
-## CI/CD Pipeline
+## Continuous Integration
 
-GitHub Actions automatically executes:
+The GitHub Actions workflow automatically performs:
 
-```text
-Terraform Format Check
-↓
-Terraform Init
-↓
-Terraform Validate
-```
-
-on every push to the main branch.
-
----
-
-## GitHub Actions
-
-The project includes an automated CI workflow that validates Terraform code quality and configuration correctness.
-
-Workflow file:
-
-```text
-.github/workflows/terraform-ci.yml
-```
-
-Pipeline stages:
-
-- Terraform Format Check
-- Terraform Init
-- Terraform Validate
+* Terraform Format Check
+* Terraform Initialization
+* Terraform Validation
 
 ---
 
@@ -159,35 +207,31 @@ Pipeline stages:
 
 ![Terraform Plan](screenshots/terraform-plan.png)
 
-### GitHub Actions Success
+---
 
-![GitHub Actions](screenshots/github-actions-success.png)
+## Design Decisions
+
+The project follows several production-oriented design practices:
+
+* Infrastructure is separated into reusable Terraform modules.
+* Azure resources share a common tagging strategy.
+* Resource names are generated using Terraform locals.
+* Network Security Groups are managed independently from networking resources.
+* Remote backend configuration is separated from the default local development workflow.
 
 ---
 
+## Future Enhancements
 
-## Learning Outcomes
-
-Through this project:
-
-- Learned Infrastructure as Code (IaC) concepts
-- Built Azure infrastructure using Terraform
-- Worked with Azure Resource Manager (AzureRM)
-- Implemented GitHub Actions CI validation pipelines
-- Generated and reviewed Terraform execution plans
-- Gained experience with Azure authentication and RBAC permissions
-
----
-
-## Future Improvements
-
-- Azure App Service deployment
-- Azure Kubernetes Service (AKS)
-- Remote Terraform State
-- Azure Key Vault integration
-- Terraform Modules
-- Multi-environment deployments (Dev / Test / Prod)
-- Automated Terraform Plan and Apply using Azure credentials
+* Azure Linux Virtual Machine
+* Azure Bastion
+* Azure Key Vault
+* Terraform Workspaces
+* Multi-environment deployments
+* Remote Terraform State using Azure Storage
+* TFLint integration
+* Checkov security scanning
+* Automated Terraform Plan on Pull Requests
 
 ---
 
@@ -195,3 +239,4 @@ Through this project:
 
 **Hasibe Erdogan**
 
+GitHub: https://github.com/h2-erdogan
