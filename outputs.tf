@@ -27,3 +27,13 @@ output "subnet_id" {
   description = "ID of the Azure Subnet."
   value       = module.network.subnet_id
 }
+
+output "network_security_group_name" {
+  description = "Name of the Azure Network Security Group."
+  value       = module.network_security_group.name
+}
+
+output "network_security_group_id" {
+  description = "ID of the Azure Network Security Group."
+  value       = module.network_security_group.id
+}

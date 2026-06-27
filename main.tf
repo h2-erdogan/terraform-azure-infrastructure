@@ -33,6 +33,16 @@ module "network" {
   tags                    = local.common_tags
 }
 
+module "network_security_group" {
+  source = "./modules/network-security-group"
+
+  name                = "${local.prefix}-nsg"
+  location            = module.resource_group.location
+  resource_group_name = module.resource_group.name
+  subnet_id           = module.network.subnet_id
+  tags                = local.common_tags
+}
+
 module "storage" {
   source = "./modules/storage"
 
